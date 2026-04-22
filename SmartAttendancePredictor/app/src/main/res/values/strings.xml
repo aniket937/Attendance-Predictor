@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">Smart Attendance Predictor</string>
+
+    <!-- Colors -->
+
+
+    <!-- Main Activity -->
+    <string name="add_subject">Add Subject</string>
+    <string name="delete_subject">Delete Subject</string>
+    <string name="delete_confirmation">Are you sure you want to delete \"%s\"?</string>
+    <string name="subject_deleted">Subject deleted</string>
+    <string name="export_success">Data exported to Downloads folder</string>
+    <string name="export_failed">Export failed</string>
+    <string name="permission_denied">Permission denied</string>
+
+    <!-- Add Subject Activity -->
+    <string name="subject_name">Subject Name</string>
+    <string name="total_classes">Total Classes Conducted</string>
+    <string name="classes_attended">Classes Attended</string>
+    <string name="save">Save</string>
+    <string name="subject_added">Subject added successfully</string>
+    <string name="subject_updated">Subject updated successfully</string>
+    <string name="insert_failed">Failed to add subject</string>
+    <string name="update_failed">Failed to update subject</string>
+    <string name="edit_subject">Edit Subject</string>
+
+    <!-- Prediction Activity -->
+    <string name="prediction">Prediction</string>
+    <string name="max_bunks_title">Maximum Safe Bunks</string>
+    <string name="max_bunks">You can bunk %d more classes</string>
+    <string name="prediction_result">Prediction Result</string>
+    <string name="attend_next">Attend Next</string>
+    <string name="skip_next">Skip Next</string>
+    <string name="skip_multiple">Skip Multiple</string>
+    <string name="skip_count">Number of classes</string>
+    <string name="study_timer">Study Timer (25 min)</string>
+    <string name="start_timer">Start Timer</string>
+    <string name="stop_timer">Stop Timer</string>
+    <string name="timer_finished">Time\'s up!</string>
+    <string name="study_session_done">Great job! Study session complete.</string>
+
+    <!-- Prediction Messages -->
+    <string name="attend_next_prediction">If you attend next class: %s</string>
+    <string name="skip_next_prediction">If you skip next class: %s</string>
+    <string name="skip_multiple_prediction">If you skip %d classes: %s</string>
+
+    <!-- Dialogs -->
+    <string name="confirm_attend">Confirm Attendance</string>
+    <string name="confirm_attend_message">Mark this class as attended?</string>
+    <string name="warning">Warning</string>
+    <string name="low_attendance_warning">Your attendance is already low! Are you sure you want to skip?</string>
+    <string name="skip_anyway">Skip Anyway</string>
+    <string name="confirm_skip_multiple">Confirm Skip</string>
+    <string name="confirm_skip_multiple_message">Are you sure you want to skip %d classes?</string>
+    <string name="edit_subject_message">Go back to edit this subject?</string>
+
+    <!-- Buttons -->
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="confirm">Confirm</string>
+
+    <!-- Errors -->
+    <string name="subject_not_found">Subject not found</string>
+    <string name="enter_skip_count">Please enter number of classes to skip</string>
+    <string name="invalid_number">Please enter a valid number</string>
+    <string name="invalid_skip_count">Please enter a valid skip count</string>
+
+    <!-- Menu -->
+    <string name="action_export">Export Data</string>
+</resources>
