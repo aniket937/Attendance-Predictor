@@ -32,6 +32,7 @@ public class PredictionActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private EditText etSkipCount;
+    private EditText etTimerMinutes;
     private Button btnAttendNext;
     private Button btnSkipNext;
     private Button btnSkipMultiple;
@@ -69,6 +70,7 @@ public class PredictionActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         etSkipCount = findViewById(R.id.etSkipCount);
+        etTimerMinutes = findViewById(R.id.etTimerMinutes);
         btnAttendNext = findViewById(R.id.btnAttendNext);
         btnSkipNext = findViewById(R.id.btnSkipNext);
         btnSkipMultiple = findViewById(R.id.btnSkipMultiple);
@@ -230,15 +232,31 @@ public class PredictionActivity extends AppCompatActivity {
             countDownTimer.cancel();
             isTimerRunning = false;
             btnStartTimer.setText(R.string.start_timer);
-            tvTimer.setText("");
+            tvTimer.setText(etTimerMinutes.getText().toString().trim() + ":00");
         } else {
-            // Start 25-minute countdown (study session)
-            countDownTimer = new CountDownTimer(25 * 60 * 1000, 1000) {
+            // Get user entered minutes
+            String minutesStr = etTimerMinutes.getText().toString().trim();
+            int minutes;
+
+            try {
+                minutes = Integer.parseInt(minutesStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, R.string.invalid_timer_value, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (minutes <= 0 || minutes > 180) {
+                Toast.makeText(this, R.string.invalid_timer_value, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Start countdown timer with user-defined duration
+            countDownTimer = new CountDownTimer(minutes * 60 * 1000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    long minutes = millisUntilFinished / 60000;
-                    long seconds = (millisUntilFinished % 60000) / 1000;
-                    tvTimer.setText(String.format("%02d:%02d", minutes, seconds));
+                    long mins = millisUntilFinished / 60000;
+                    long secs = (millisUntilFinished % 60000) / 1000;
+                    tvTimer.setText(String.format("%02d:%02d", mins, secs));
                 }
 
                 @Override
