@@ -64,6 +64,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
     class SubjectViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
         private TextView tvSubjectName;
+        private TextView tvCourseCode;
         private TextView tvAttendance;
         private TextView tvStatus;
         private TextView tvClasses;
@@ -72,6 +73,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
             super(itemView);
             cardView = itemView.findViewById(R.id.cardView);
             tvSubjectName = itemView.findViewById(R.id.tvSubjectName);
+            tvCourseCode = itemView.findViewById(R.id.tvCourseCode);
             tvAttendance = itemView.findViewById(R.id.tvAttendance);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvClasses = itemView.findViewById(R.id.tvClasses);
@@ -84,6 +86,14 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
             );
 
             tvSubjectName.setText(subject.getName());
+
+            if (subject.getCourseCode() != null && !subject.getCourseCode().isEmpty()) {
+                tvCourseCode.setText(subject.getCourseCode());
+                tvCourseCode.setVisibility(TextView.VISIBLE);
+            } else {
+                tvCourseCode.setVisibility(TextView.GONE);
+            }
+
             tvAttendance.setText(AttendanceUtils.formatPercentage(percentage));
             tvStatus.setText(AttendanceUtils.getStatus(percentage));
             tvStatus.setTextColor(AttendanceUtils.getStatusColor(percentage));

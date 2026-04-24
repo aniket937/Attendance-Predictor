@@ -17,6 +17,7 @@
 
     <!-- Add Subject Activity -->
     <string name="subject_name">Subject Name</string>
+    <string name="course_code">Course Code (Optional)</string>
     <string name="total_classes">Total Classes Conducted</string>
     <string name="classes_attended">Classes Attended</string>
     <string name="save">Save</string>

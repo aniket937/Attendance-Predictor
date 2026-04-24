@@ -26,6 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Column names
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_COURSE_CODE = "course_code";
     public static final String COLUMN_TOTAL = "total";
     public static final String COLUMN_ATTENDED = "attended";
 
@@ -34,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_SUBJECTS + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_NAME + " TEXT NOT NULL, " +
+                    COLUMN_COURSE_CODE + " TEXT, " +
                     COLUMN_TOTAL + " INTEGER NOT NULL, " +
                     COLUMN_ATTENDED + " INTEGER NOT NULL" +
                     ")";
@@ -80,6 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, subject.getName());
+        values.put(COLUMN_COURSE_CODE, subject.getCourseCode());
         values.put(COLUMN_TOTAL, subject.getTotal());
         values.put(COLUMN_ATTENDED, subject.getAttended());
 
@@ -104,6 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Subject subject = new Subject();
                 subject.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
                 subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
+                subject.setCourseCode(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE_CODE)));
                 subject.setTotal(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TOTAL)));
                 subject.setAttended(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ATTENDED)));
                 subjectList.add(subject);
@@ -120,11 +124,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param id Subject ID
      * @return Subject object or null if not found
      */
-    public Subject getSubjectById(int id) {
+public Subject getSubjectById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(
                 TABLE_SUBJECTS,
-                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_TOTAL, COLUMN_ATTENDED},
+                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_COURSE_CODE, COLUMN_TOTAL, COLUMN_ATTENDED},
                 COLUMN_ID + "=?",
                 new String[]{String.valueOf(id)},
                 null, null, null
@@ -135,6 +139,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             subject = new Subject(
                     cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE_CODE)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TOTAL)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ATTENDED))
             );
@@ -154,6 +159,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, subject.getName());
+        values.put(COLUMN_COURSE_CODE, subject.getCourseCode());
         values.put(COLUMN_TOTAL, subject.getTotal());
         values.put(COLUMN_ATTENDED, subject.getAttended());
 
