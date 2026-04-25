@@ -19,9 +19,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="34">
 
-        <!-- Main Activity -->
+        <!-- Splash Activity (Launcher) -->
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.SplashActivity"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -29,6 +29,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Login Activity -->
+        <activity
+            android:name=".activities.LoginActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+
+        <!-- Register Activity -->
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+
+        <!-- Main Activity -->
+        <activity
+            android:name=".activities.MainActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
 
         <!-- Add Subject Activity -->
         <activity

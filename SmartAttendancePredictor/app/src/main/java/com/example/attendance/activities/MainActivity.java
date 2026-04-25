@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.attendance.R;
@@ -24,6 +27,7 @@ import com.example.attendance.database.DatabaseHelper;
 import com.example.attendance.model.Subject;
 import com.example.attendance.utils.AttendanceUtils;
 import com.example.attendance.utils.NotificationHelper;
+import com.example.attendance.utils.SessionManager;
 import com.example.attendance.utils.StorageHelper;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -41,9 +45,12 @@ public class MainActivity extends AppCompatActivity implements SubjectAdapter.On
     private static final int REQUEST_NOTIFICATION_PERMISSION = 200;
     private static final int REQUEST_EXPORT_PERMISSION = 300;
 
+    private TextView tvWelcome;
+    private Button btnLogout;
     private RecyclerView recyclerView;
     private SubjectAdapter adapter;
     private DatabaseHelper dbHelper;
+    private SessionManager sessionManager;
     private NotificationHelper notificationHelper;
     private StorageHelper storageHelper;
 
@@ -54,10 +61,11 @@ public class MainActivity extends AppCompatActivity implements SubjectAdapter.On
 
         // Initialize helpers
         dbHelper = DatabaseHelper.getInstance(this);
+        sessionManager = new SessionManager(this);
         notificationHelper = new NotificationHelper(this);
         storageHelper = new StorageHelper(this);
 
-        // Setup toolbar
+        // Setup toolbar with student name
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.app_name);
         }
@@ -70,6 +78,17 @@ public class MainActivity extends AppCompatActivity implements SubjectAdapter.On
     }
 
     private void initViews() {
+        tvWelcome = findViewById(R.id.tvWelcome);
+        btnLogout = findViewById(R.id.btnLogout);
+
+        // Display welcome message with student name
+        String studentName = sessionManager.getStudentName();
+        int rollNo = sessionManager.getRollNo();
+        tvWelcome.setText(getString(R.string.welcome_message, studentName, rollNo));
+
+        // Logout button click
+        btnLogout.setOnClickListener(v -> handleLogout());
+
         // Setup RecyclerView
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -179,6 +198,21 @@ public class MainActivity extends AppCompatActivity implements SubjectAdapter.On
         }
     }
 
+    private void handleLogout() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.confirm_logout)
+                .setMessage(R.string.logout_message)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    sessionManager.logout();
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton(R.string.no, null)
+                .show();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -203,6 +237,9 @@ public class MainActivity extends AppCompatActivity implements SubjectAdapter.On
         int id = item.getItemId();
         if (id == R.id.action_export) {
             requestExportPermission();
+            return true;
+        } else if (id == R.id.action_logout) {
+            handleLogout();
             return true;
         }
         return super.onOptionsItemSelected(item);

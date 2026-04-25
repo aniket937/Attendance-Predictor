@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App Name -->
-    <string name="app_name">Smart Attendance Predictor</string>
+    <string name="app_name">Smart Attendance</string>
+    <string name="app_tagline">Predict Your Bunks Smartly</string>
+
+    <!-- Login Activity -->
+    <string name="login">Login</string>
+    <string name="new_user">New user?</string>
+    <string name="register">Register</string>
+    <string name="roll_number">Roll Number</string>
+    <string name="student_name">Student Name</string>
+    <string name="branch">Branch</string>
 
     <!-- Main Activity -->
     <string name="add_subject">Add Subject</string>
@@ -11,6 +20,9 @@
     <string name="export_success">Data exported to Downloads folder</string>
     <string name="export_failed">Export failed</string>
     <string name="permission_denied">Permission denied</string>
+    <string name="logout">Logout</string>
+    <string name="confirm_logout">Confirm Logout</string>
+    <string name="logout_message">Are you sure you want to logout?</string>
 
     <!-- Add Subject Activity -->
     <string name="subject_name">Subject Name</string>
@@ -69,6 +81,21 @@
     <string name="invalid_skip_count">Please enter a valid skip count</string>
     <string name="invalid_timer_value">Please enter valid minutes (1-180)</string>
 
+    <!-- Validation Errors -->
+    <string name="error_enter_roll_no">Please enter roll number</string>
+    <string name="error_invalid_roll_no">Invalid roll number</string>
+    <string name="error_not_registered">Roll number not registered</string>
+    <string name="error_enter_name">Please enter your name</string>
+    <string name="error_enter_branch">Please enter your branch</string>
+    <string name="error_roll_no_exists">Roll number already exists</string>
+
+    <!-- Success Messages -->
+    <string name="login_success">Welcome %s!</string>
+    <string name="registration_success">Registration successful!</string>
+    <string name="registration_failed">Registration failed</string>
+
     <!-- Menu -->
     <string name="action_export">Export Data</string>
+    <string name="action_logout">Logout</string>
+    <string name="welcome_message">Welcome %1$s (Roll: %2$d)</string>
 </resources>
