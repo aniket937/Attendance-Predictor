@@ -7,7 +7,6 @@ package com.example.attendance.model;
 public class Subject {
     private int id;
     private String name;
-    private String courseCode;
     private int total;
     private int attended;
 
@@ -18,15 +17,13 @@ public class Subject {
     }
 
     /**
-     * Constructor with name, courseCode, total, attended
+     * Constructor with name, total, attended
      * @param name Subject name
-     * @param courseCode Course code
      * @param total Total classes conducted
      * @param attended Classes attended
      */
-    public Subject(String name, String courseCode, int total, int attended) {
+    public Subject(String name, int total, int attended) {
         this.name = name;
-        this.courseCode = courseCode;
         this.total = total;
         this.attended = attended;
     }
@@ -35,14 +32,12 @@ public class Subject {
      * Constructor with all fields including id
      * @param id Subject ID
      * @param name Subject name
-     * @param courseCode Course code
      * @param total Total classes conducted
      * @param attended Classes attended
      */
-    public Subject(int id, String name, String courseCode, int total, int attended) {
+    public Subject(int id, String name, int total, int attended) {
         this.id = id;
         this.name = name;
-        this.courseCode = courseCode;
         this.total = total;
         this.attended = attended;
     }
@@ -63,14 +58,6 @@ public class Subject {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getCourseCode() {
-        return courseCode;
-    }
-
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
     }
 
     public int getTotal() {

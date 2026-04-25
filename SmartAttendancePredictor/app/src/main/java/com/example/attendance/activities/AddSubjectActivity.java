@@ -21,7 +21,6 @@ public class AddSubjectActivity extends AppCompatActivity {
     public static final String EXTRA_SUBJECT_ID = "subject_id";
 
     private EditText etSubjectName;
-    private EditText etCourseCode;
     private EditText etTotalClasses;
     private EditText etClassesAttended;
     private Button btnSave;
@@ -49,7 +48,6 @@ public class AddSubjectActivity extends AppCompatActivity {
 
     private void initViews() {
         etSubjectName = findViewById(R.id.etSubjectName);
-        etCourseCode = findViewById(R.id.etCourseCode);
         etTotalClasses = findViewById(R.id.etTotalClasses);
         etClassesAttended = findViewById(R.id.etClassesAttended);
         btnSave = findViewById(R.id.btnSave);
@@ -61,7 +59,6 @@ public class AddSubjectActivity extends AppCompatActivity {
         Subject subject = dbHelper.getSubjectById(editSubjectId);
         if (subject != null) {
             etSubjectName.setText(subject.getName());
-            etCourseCode.setText(subject.getCourseCode());
             etTotalClasses.setText(String.valueOf(subject.getTotal()));
             etClassesAttended.setText(String.valueOf(subject.getAttended()));
 
@@ -73,7 +70,6 @@ public class AddSubjectActivity extends AppCompatActivity {
 
     private void saveSubject() {
         String name = etSubjectName.getText().toString().trim();
-        String courseCode = etCourseCode.getText().toString().trim();
         String totalStr = etTotalClasses.getText().toString().trim();
         String attendedStr = etClassesAttended.getText().toString().trim();
 
@@ -89,7 +85,7 @@ public class AddSubjectActivity extends AppCompatActivity {
 
         Subject subject;
         if (editSubjectId != -1) {
-            subject = new Subject(editSubjectId, name, courseCode, total, attended);
+            subject = new Subject(editSubjectId, name, total, attended);
             boolean success = dbHelper.updateSubject(subject);
             if (success) {
                 Toast.makeText(this, R.string.subject_updated, Toast.LENGTH_SHORT).show();
@@ -99,7 +95,7 @@ public class AddSubjectActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.update_failed, Toast.LENGTH_SHORT).show();
             }
         } else {
-            subject = new Subject(name, courseCode, total, attended);
+            subject = new Subject(name, total, attended);
             boolean success = dbHelper.insertSubject(subject);
             if (success) {
                 Toast.makeText(this, R.string.subject_added, Toast.LENGTH_SHORT).show();

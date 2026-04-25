@@ -25,7 +25,6 @@ public class PredictionActivity extends AppCompatActivity {
     public static final String EXTRA_SUBJECT_ID = "subject_id";
 
     private TextView tvSubjectName;
-    private TextView tvCourseCode;
     private TextView tvCurrentAttendance;
     private TextView tvStatus;
     private TextView tvPrediction;
@@ -64,7 +63,6 @@ public class PredictionActivity extends AppCompatActivity {
 
     private void initViews() {
         tvSubjectName = findViewById(R.id.tvSubjectName);
-        tvCourseCode = findViewById(R.id.tvCourseCode);
         tvCurrentAttendance = findViewById(R.id.tvCurrentAttendance);
         tvStatus = findViewById(R.id.tvStatus);
         tvPrediction = findViewById(R.id.tvPrediction);
@@ -114,14 +112,6 @@ public class PredictionActivity extends AppCompatActivity {
         );
 
         tvSubjectName.setText(currentSubject.getName());
-
-        if (currentSubject.getCourseCode() != null && !currentSubject.getCourseCode().isEmpty()) {
-            tvCourseCode.setText(currentSubject.getCourseCode());
-            tvCourseCode.setVisibility(TextView.VISIBLE);
-        } else {
-            tvCourseCode.setVisibility(TextView.GONE);
-        }
-
         tvCurrentAttendance.setText(AttendanceUtils.formatPercentage(percentage));
         tvStatus.setText(AttendanceUtils.getStatus(percentage));
         tvStatus.setTextColor(AttendanceUtils.getStatusColor(percentage));

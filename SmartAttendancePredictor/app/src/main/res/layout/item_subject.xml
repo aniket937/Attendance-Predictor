@@ -36,14 +36,6 @@
                 tools:text="Mathematics" />
 
             <TextView
-                android:id="@+id/tvCourseCode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/text_secondary"
-                tools:text="MATH101" />
-
-            <TextView
                 android:id="@+id/tvClasses"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

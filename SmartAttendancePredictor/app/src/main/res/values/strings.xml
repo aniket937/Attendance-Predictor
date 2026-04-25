@@ -3,9 +3,6 @@
     <!-- App Name -->
     <string name="app_name">Smart Attendance Predictor</string>
 
-    <!-- Colors -->
-
-
     <!-- Main Activity -->
     <string name="add_subject">Add Subject</string>
     <string name="delete_subject">Delete Subject</string>
@@ -17,7 +14,6 @@
 
     <!-- Add Subject Activity -->
     <string name="subject_name">Subject Name</string>
-    <string name="course_code">Course Code (Optional)</string>
     <string name="total_classes">Total Classes Conducted</string>
     <string name="classes_attended">Classes Attended</string>
     <string name="save">Save</string>
@@ -36,7 +32,7 @@
     <string name="skip_next">Skip Next</string>
     <string name="skip_multiple">Skip Multiple</string>
     <string name="skip_count">Number of classes</string>
-    <string name="study_timer">Set Timer</string>
+    <string name="set_timer">Set Timer</string>
     <string name="minutes">Min</string>
     <string name="minutes_label">min</string>
     <string name="start_timer">Start Timer</string>
