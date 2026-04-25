@@ -43,7 +43,14 @@
     <string name="attend_next">Attend Next</string>
     <string name="skip_next">Skip Next</string>
     <string name="skip_multiple">Skip Multiple</string>
-    <string name="skip_count">Number of classes</string>
+    <string name="skip_count">Classes to skip</string>
+    <string name="attend_predictor">Attend Classes Predictor</string>
+    <string name="attend_count">Classes to attend</string>
+    <string name="calculate">Calculate</string>
+    <string name="attend_prediction_result">After attending %1$d more class(es): %2$s</string>
+    <string name="min_classes_needed">Attend %1$d more to reach 75%%</string>
+    <string name="already_safe">You\'re already safe!</string>
+    <string name="error_enter_attend_count">Enter number of classes</string>
     <string name="set_timer">Set Timer</string>
     <string name="minutes">Min</string>
     <string name="minutes_label">min</string>
@@ -78,7 +85,7 @@
     <string name="subject_not_found">Subject not found</string>
     <string name="enter_skip_count">Please enter number of classes to skip</string>
     <string name="invalid_number">Please enter a valid number</string>
-    <string name="invalid_skip_count">Please enter a valid skip count</string>
+    <string name="invalid_skip_count">Enter valid count (1 or more)</string>
     <string name="invalid_timer_value">Please enter valid minutes (1-180)</string>
 
     <!-- Validation Errors -->

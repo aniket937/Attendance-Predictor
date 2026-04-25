@@ -177,4 +177,64 @@ public class AttendanceUtils {
 
         return null;
     }
+
+    /**
+     * Calculate attendance percentage if user attends multiple classes
+     * @param attended Current classes attended
+     * @param total Current total classes
+     * @param attendCount Number of classes to attend
+     * @return New attendance percentage after attending n classes
+     */
+    public static double attendMultiple(int attended, int total, int attendCount) {
+        if (total < 0 || attendCount < 0) {
+            return 0.0;
+        }
+        if (attendCount == 0) {
+            return calculateAttendance(attended, total);
+        }
+        return (double) (attended + attendCount) / (total + attendCount) * 100;
+    }
+
+    /**
+     * Calculate minimum classes needed to attend to reach target percentage
+     * @param attended Current classes attended
+     * @param total Current total classes
+     * @param target Target attendance percentage (e.g., 75.0)
+     * @return Minimum classes needed, or -1 if impossible
+     */
+    public static int minClassesNeeded(int attended, int total, double target) {
+        if (total < 0 || target <= 0 || target > 100) {
+            return -1;
+        }
+
+        // Already at or above target
+        if (calculateAttendance(attended, total) >= target) {
+            return 0;
+        }
+
+        // Calculate minimum classes needed using algebra:
+        // (A + X) / (T + X) >= target/100
+        // A + X >= (T + X) * target/100
+        // A + X >= T * target/100 + X * target/100
+        // A - T * target/100 >= X * (target/100 - 1)
+        // X <= (A - T * target/100) / (target/100 - 1)
+        // Since we need X >=, we solve differently:
+        // (A + X) >= (T + X) * target/100
+        // 100*A + 100*X >= T*target + X*target
+        // 100*A - T*target >= X*target - 100*X
+        // 100*A - T*target >= X*(target - 100)
+        // X >= (100*A - T*target) / (target - 100)
+        // Since (target - 100) is negative, this reverses the inequality
+        // X <= (T*target - 100*A) / (100 - target)
+
+        double numerator = target * total - 100.0 * attended;
+        double denominator = 100.0 - target;
+
+        if (denominator <= 0) {
+            return -1; // Target is 100% or more
+        }
+
+        int minNeeded = (int) Math.ceil(numerator / denominator);
+        return minNeeded > 0 ? minNeeded : 1;
+    }
 }

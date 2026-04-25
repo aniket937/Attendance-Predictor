@@ -33,13 +33,17 @@ public class PredictionActivity extends AppCompatActivity {
 
     private EditText etSkipCount;
     private EditText etTimerMinutes;
+    private EditText etAttendCount;
     private Button btnAttendNext;
     private Button btnSkipNext;
     private Button btnSkipMultiple;
     private Button btnStartTimer;
     private Button btnEditSubject;
+    private Button btnCalculateAttend;
 
     private TextView tvTimer;
+    private TextView tvAttendPrediction;
+    private TextView tvMinClassesNeeded;
     private CountDownTimer countDownTimer;
     private boolean isTimerRunning = false;
 
@@ -71,13 +75,17 @@ public class PredictionActivity extends AppCompatActivity {
 
         etSkipCount = findViewById(R.id.etSkipCount);
         etTimerMinutes = findViewById(R.id.etTimerMinutes);
+        etAttendCount = findViewById(R.id.etAttendCount);
         btnAttendNext = findViewById(R.id.btnAttendNext);
         btnSkipNext = findViewById(R.id.btnSkipNext);
         btnSkipMultiple = findViewById(R.id.btnSkipMultiple);
         btnStartTimer = findViewById(R.id.btnStartTimer);
         btnEditSubject = findViewById(R.id.btnEditSubject);
+        btnCalculateAttend = findViewById(R.id.btnCalculateAttend);
 
         tvTimer = findViewById(R.id.tvTimer);
+        tvAttendPrediction = findViewById(R.id.tvAttendPrediction);
+        tvMinClassesNeeded = findViewById(R.id.tvMinClassesNeeded);
 
         // Set click listeners
         btnAttendNext.setOnClickListener(v -> handleAttendNext());
@@ -85,6 +93,7 @@ public class PredictionActivity extends AppCompatActivity {
         btnSkipMultiple.setOnClickListener(v -> handleSkipMultiple());
         btnStartTimer.setOnClickListener(v -> handleTimer());
         btnEditSubject.setOnClickListener(v -> handleEditSubject());
+        btnCalculateAttend.setOnClickListener(v -> handleCalculateAttend());
     }
 
     private void loadSubjectData() {
@@ -271,6 +280,83 @@ public class PredictionActivity extends AppCompatActivity {
             countDownTimer.start();
             isTimerRunning = true;
             btnStartTimer.setText(R.string.stop_timer);
+        }
+    }
+
+    /**
+     * Handle "Attend Classes Predictor" calculation
+     * Calculate new attendance after attending multiple classes
+     */
+    private void handleCalculateAttend() {
+        String attendCountStr = etAttendCount.getText().toString().trim();
+
+        // Validate input
+        if (attendCountStr.isEmpty()) {
+            etAttendCount.setError(getString(R.string.error_enter_attend_count));
+            etAttendCount.requestFocus();
+            return;
+        }
+
+        int attendCount;
+        try {
+            attendCount = Integer.parseInt(attendCountStr);
+        } catch (NumberFormatException e) {
+            etAttendCount.setError(getString(R.string.invalid_number));
+            etAttendCount.requestFocus();
+            return;
+        }
+
+        if (attendCount <= 0) {
+            etAttendCount.setError(getString(R.string.invalid_skip_count));
+            etAttendCount.requestFocus();
+            return;
+        }
+
+        // Calculate new attendance
+        double currentPercentage = AttendanceUtils.calculateAttendance(
+                currentSubject.getAttended(),
+                currentSubject.getTotal()
+        );
+
+        double newPercentage = AttendanceUtils.attendMultiple(
+                currentSubject.getAttended(),
+                currentSubject.getTotal(),
+                attendCount
+        );
+
+        // Display result
+        String resultText = getString(R.string.attend_prediction_result,
+                attendCount,
+                AttendanceUtils.formatPercentage(newPercentage));
+
+        if (newPercentage >= AttendanceUtils.LOW_THRESHOLD) {
+            tvAttendPrediction.setText(resultText + " ✓");
+            tvAttendPrediction.setTextColor(getResources().getColor(R.color.safe_green, null));
+        } else {
+            tvAttendPrediction.setText(resultText);
+            tvAttendPrediction.setTextColor(getResources().getColor(R.color.text_primary, null));
+        }
+
+        // Show minimum classes needed if not yet safe
+        if (currentPercentage < AttendanceUtils.LOW_THRESHOLD) {
+            int minNeeded = AttendanceUtils.minClassesNeeded(
+                    currentSubject.getAttended(),
+                    currentSubject.getTotal(),
+                    AttendanceUtils.LOW_THRESHOLD
+            );
+
+            if (minNeeded > 0) {
+                tvMinClassesNeeded.setText(getString(R.string.min_classes_needed, minNeeded));
+                tvMinClassesNeeded.setVisibility(TextView.VISIBLE);
+            } else if (minNeeded == 0) {
+                tvMinClassesNeeded.setText(R.string.already_safe);
+                tvMinClassesNeeded.setVisibility(TextView.VISIBLE);
+            } else {
+                tvMinClassesNeeded.setVisibility(TextView.GONE);
+            }
+        } else {
+            tvMinClassesNeeded.setText(R.string.already_safe);
+            tvMinClassesNeeded.setVisibility(TextView.VISIBLE);
         }
     }
 
