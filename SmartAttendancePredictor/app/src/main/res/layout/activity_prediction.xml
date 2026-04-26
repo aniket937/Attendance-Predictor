@@ -28,7 +28,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Subject Name Card -->
+            <!-- Current Attendance Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Max Bunks Card -->
+            <!-- Maximum Safe Bunks Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -119,13 +119,14 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Prediction Card -->
+            <!-- Skip Multiple Section -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFEBEE">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -136,87 +137,49 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/prediction_result"
+                        android:text="@string/skip_multiple"
                         android:textSize="16sp"
-                        android:textColor="@color/text_secondary" />
+                        android:textStyle="bold"
+                        android:textColor="@color/danger_red" />
 
-                    <TextView
-                        android:id="@+id/tvPrediction"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary"
-                        tools:text="If you attend next class: 86.21%" />
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etSkipCount"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/skip_count"
+                                android:inputType="number" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <Button
+                            android:id="@+id/btnSkipMultiple"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/skip_multiple"
+                            android:textColor="@android:color/white"
+                            android:backgroundTint="@color/danger_red" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Action Buttons -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
-
-                <Button
-                    android:id="@+id/btnAttendNext"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    android:text="@string/attend_next"
-                    android:textColor="@android:color/white"
-                    android:backgroundTint="@color/safe_green" />
-
-                <Button
-                    android:id="@+id/btnSkipNext"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="4dp"
-                    android:text="@string/skip_next"
-                    android:textColor="@android:color/white"
-                    android:backgroundTint="@color/danger_red" />
-
-            </LinearLayout>
-
-            <!-- Skip Multiple -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp"
-                android:gravity="center_vertical">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etSkipCount"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/skip_count"
-                        android:inputType="number" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <Button
-                    android:id="@+id/btnSkipMultiple"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/skip_multiple"
-                    android:textColor="@android:color/white"
-                    android:backgroundTint="@color/danger_red" />
-
-            </LinearLayout>
-
-            <!-- Attend Classes Predictor Section -->
+            <!-- Attend Multiple Section -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -234,7 +197,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/attend_predictor"
+                        android:text="@string/attend_multiple"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/safe_green" />
@@ -263,36 +226,20 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <Button
-                            android:id="@+id/btnCalculateAttend"
+                            android:id="@+id/btnAttendMultiple"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/calculate"
+                            android:text="@string/attend_multiple"
                             android:textColor="@android:color/white"
                             android:backgroundTint="@color/safe_green" />
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tvAttendPrediction"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary" />
-
-                    <TextView
-                        android:id="@+id/tvMinClassesNeeded"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_secondary" />
-
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Timer Section -->
+            <!-- Prediction Result Section -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -304,67 +251,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/set_timer"
+                        android:text="@string/prediction_result"
                         android:textSize="16sp"
+                        android:textStyle="bold"
                         android:textColor="@color/text_secondary" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center_vertical">
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etTimerMinutes"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="@string/minutes"
-                                android:inputType="number"
-                                android:gravity="center"
-                                android:text="25" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:text="@string/minutes_label"
-                            android:textSize="16sp" />
-
-                    </LinearLayout>
-
                     <TextView
-                        android:id="@+id/tvTimer"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tvPrediction"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textSize="36sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:text="25:00" />
-
-                    <Button
-                        android:id="@+id/btnStartTimer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/start_timer"
-                        android:textColor="@android:color/white"
-                        android:backgroundTint="@color/colorPrimary" />
+                        android:textSize="18sp"
+                        android:textColor="@color/text_primary"
+                        android:minLines="3"
+                        tools:text="Enter classes to skip or attend and click the buttons above to see predictions." />
 
                 </LinearLayout>
 

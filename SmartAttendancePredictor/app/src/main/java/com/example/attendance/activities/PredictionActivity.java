@@ -1,7 +1,6 @@
 package com.example.attendance.activities;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -18,82 +17,74 @@ import com.example.attendance.utils.AttendanceUtils;
 
 /**
  * Activity for viewing and predicting attendance for a specific subject.
- * Includes prediction buttons, countdown timer, and bunk warnings.
+ * 
+ * DATA SEPARATION:
+ * - Original data (attended, total): NEVER modified by predictions
+ * - Prediction data (tempAttended, tempTotal): Used only for calculations
+ * 
+ * The top UI always shows ORIGINAL attendance.
+ * The prediction result shows TEMPORARY predicted attendance.
  */
 public class PredictionActivity extends AppCompatActivity {
 
     public static final String EXTRA_SUBJECT_ID = "subject_id";
 
+    // UI Elements - Original Attendance Display
     private TextView tvSubjectName;
     private TextView tvCurrentAttendance;
     private TextView tvStatus;
-    private TextView tvPrediction;
     private TextView tvMaxBunks;
     private ProgressBar progressBar;
 
+    // UI Elements - Prediction
     private EditText etSkipCount;
-    private EditText etTimerMinutes;
     private EditText etAttendCount;
-    private Button btnAttendNext;
-    private Button btnSkipNext;
     private Button btnSkipMultiple;
-    private Button btnStartTimer;
+    private Button btnAttendMultiple;
     private Button btnEditSubject;
-    private Button btnCalculateAttend;
-
-    private TextView tvTimer;
-    private TextView tvAttendPrediction;
-    private TextView tvMinClassesNeeded;
-    private CountDownTimer countDownTimer;
-    private boolean isTimerRunning = false;
+    private TextView tvPrediction;
 
     private DatabaseHelper dbHelper;
+    
+    // ORIGINAL DATA - Do NOT modify these during predictions
     private Subject currentSubject;
+    
+    // PREDICTION DATA - Temporary variables (never saved to database)
+    private int tempAttended;
+    private int tempTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prediction);
 
-        // Initialize database helper
         dbHelper = DatabaseHelper.getInstance(this);
-
-        // Initialize views
         initViews();
-
-        // Load subject data
         loadSubjectData();
     }
 
     private void initViews() {
+        // Original attendance UI elements
         tvSubjectName = findViewById(R.id.tvSubjectName);
         tvCurrentAttendance = findViewById(R.id.tvCurrentAttendance);
         tvStatus = findViewById(R.id.tvStatus);
-        tvPrediction = findViewById(R.id.tvPrediction);
         tvMaxBunks = findViewById(R.id.tvMaxBunks);
         progressBar = findViewById(R.id.progressBar);
 
+        // Prediction UI elements
         etSkipCount = findViewById(R.id.etSkipCount);
-        etTimerMinutes = findViewById(R.id.etTimerMinutes);
         etAttendCount = findViewById(R.id.etAttendCount);
-        btnAttendNext = findViewById(R.id.btnAttendNext);
-        btnSkipNext = findViewById(R.id.btnSkipNext);
         btnSkipMultiple = findViewById(R.id.btnSkipMultiple);
-        btnStartTimer = findViewById(R.id.btnStartTimer);
+        btnAttendMultiple = findViewById(R.id.btnAttendMultiple);
         btnEditSubject = findViewById(R.id.btnEditSubject);
-        btnCalculateAttend = findViewById(R.id.btnCalculateAttend);
+        tvPrediction = findViewById(R.id.tvPrediction);
 
-        tvTimer = findViewById(R.id.tvTimer);
-        tvAttendPrediction = findViewById(R.id.tvAttendPrediction);
-        tvMinClassesNeeded = findViewById(R.id.tvMinClassesNeeded);
+        // Initially, Prediction Result should be empty
+        tvPrediction.setText("");
 
-        // Set click listeners
-        btnAttendNext.setOnClickListener(v -> handleAttendNext());
-        btnSkipNext.setOnClickListener(v -> handleSkipNext());
         btnSkipMultiple.setOnClickListener(v -> handleSkipMultiple());
-        btnStartTimer.setOnClickListener(v -> handleTimer());
+        btnAttendMultiple.setOnClickListener(v -> handleAttendMultiple());
         btnEditSubject.setOnClickListener(v -> handleEditSubject());
-        btnCalculateAttend.setOnClickListener(v -> handleCalculateAttend());
     }
 
     private void loadSubjectData() {
@@ -111,92 +102,159 @@ public class PredictionActivity extends AppCompatActivity {
             return;
         }
 
-        updateUI();
+        updateOriginalUI();
     }
 
-    private void updateUI() {
-        double percentage = AttendanceUtils.calculateAttendance(
-                currentSubject.getAttended(),
-                currentSubject.getTotal()
-        );
+    /**
+     * Update the ORIGINAL attendance UI
+     * This shows the REAL data from database - NEVER modified by predictions
+     */
+    private void updateOriginalUI() {
+        // Get original values (NEVER changed)
+        int attended = currentSubject.getAttended();
+        int total = currentSubject.getTotal();
 
+        // Calculate original percentage
+        double percentage = AttendanceUtils.calculateAttendance(attended, total);
+
+        // Update top UI (original attendance display)
         tvSubjectName.setText(currentSubject.getName());
         tvCurrentAttendance.setText(AttendanceUtils.formatPercentage(percentage));
         tvStatus.setText(AttendanceUtils.getStatus(percentage));
         tvStatus.setTextColor(AttendanceUtils.getStatusColor(percentage));
-
-        // Update progress bar
         progressBar.setProgress((int) percentage);
 
-        // Calculate max bunks
-        int maxBunks = AttendanceUtils.maxBunks(
-                currentSubject.getAttended(),
-                currentSubject.getTotal(),
-                AttendanceUtils.LOW_THRESHOLD
-        );
-        tvMaxBunks.setText(getString(R.string.max_bunks, maxBunks));
+        // Update maximum bunks section
+        updateMaxBunksDisplay(percentage, attended, total);
     }
 
-    private void handleAttendNext() {
-        double newPercentage = AttendanceUtils.attendNext(
-                currentSubject.getAttended(),
-                currentSubject.getTotal()
-        );
-
-        tvPrediction.setText(getString(R.string.attend_next_prediction,
-                AttendanceUtils.formatPercentage(newPercentage)));
-
-        // Ask for confirmation
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.confirm_attend)
-                .setMessage(R.string.confirm_attend_message)
-                .setPositiveButton(R.string.yes, (dialog, which) -> {
-                    currentSubject.setTotal(currentSubject.getTotal() + 1);
-                    currentSubject.setAttended(currentSubject.getAttended() + 1);
-                    saveAndRefresh();
-                })
-                .setNegativeButton(R.string.no, null)
-                .show();
-    }
-
-    private void handleSkipNext() {
-        double currentPercentage = AttendanceUtils.calculateAttendance(
-                currentSubject.getAttended(),
-                currentSubject.getTotal()
-        );
-
-        // Show warning if attendance is low
-        if (currentPercentage < AttendanceUtils.LOW_THRESHOLD) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.warning)
-                    .setMessage(R.string.low_attendance_warning)
-                    .setPositiveButton(R.string.skip_anyway, (dialog, which) -> {
-                        applySkipNext();
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
+    /**
+     * Update maximum bunks display based on original data
+     */
+    private void updateMaxBunksDisplay(double currentPercentage, int attended, int total) {
+        if (currentPercentage >= AttendanceUtils.LOW_THRESHOLD) {
+            // Calculate maximum bunks
+            int maxBunks = calculateMaxBunks(attended, total);
+            if (maxBunks > 0) {
+                tvMaxBunks.setText(getString(R.string.max_bunks, maxBunks));
+            } else {
+                tvMaxBunks.setText(getString(R.string.max_bunks_zero));
+            }
         } else {
-            double newPercentage = AttendanceUtils.skipNext(
-                    currentSubject.getAttended(),
-                    currentSubject.getTotal()
-            );
-            tvPrediction.setText(getString(R.string.skip_next_prediction,
-                    AttendanceUtils.formatPercentage(newPercentage)));
-
-            applySkipNext();
+            // Calculate classes needed to attend
+            int classesNeeded = calculateClassesNeeded(attended, total);
+            tvMaxBunks.setText(getString(R.string.need_attend, classesNeeded));
         }
     }
 
-    private void applySkipNext() {
-        currentSubject.setTotal(currentSubject.getTotal() + 1);
-        saveAndRefresh();
+    /**
+     * Calculate maximum number of classes that can be skipped while keeping attendance >= 75%
+     * Uses TEMP variables - does NOT modify original data
+     */
+    private int calculateMaxBunks(int attended, int total) {
+        if (total <= 0 || attended <= 0) {
+            return 0;
+        }
+
+        int bunk = 0;
+        while (true) {
+            // Use temporary variables for calculation
+            double projectedPercentage = (double) attended / (total + bunk) * 100;
+            if (projectedPercentage >= AttendanceUtils.LOW_THRESHOLD) {
+                bunk++;
+            } else {
+                break;
+            }
+            if (bunk > total + 100) {
+                break;
+            }
+        }
+        return Math.max(0, bunk - 1);
     }
 
+    /**
+     * Calculate minimum number of classes needed to attend to reach 75%
+     * Uses TEMP variables - does NOT modify original data
+     */
+    private int calculateClassesNeeded(int attended, int total) {
+        if (total <= 0) {
+            return -1;
+        }
+
+        double currentPercentage = (double) attended / total * 100;
+        if (currentPercentage >= AttendanceUtils.LOW_THRESHOLD) {
+            return 0;
+        }
+
+        int classes = 0;
+        while (true) {
+            double projectedPercentage = (double) (attended + classes) / (total + classes) * 100;
+            if (projectedPercentage >= AttendanceUtils.LOW_THRESHOLD) {
+                break;
+            }
+            classes++;
+            if (classes > 1000) {
+                return -1;
+            }
+        }
+        return classes;
+    }
+
+    /**
+     * Calculate predicted attendance for SKIP
+     * Formula: attended / (total + skipCount) * 100
+     * Uses TEMP variables - does NOT modify original data
+     */
+    private double calculateSkipPrediction(int skipCount) {
+        int originalAttended = currentSubject.getAttended();
+        int originalTotal = currentSubject.getTotal();
+
+        if (originalTotal <= 0 || skipCount < 0) {
+            return 0.0;
+        }
+
+        // Use temporary values for prediction
+        tempAttended = originalAttended;
+        tempTotal = originalTotal + skipCount;
+
+        return (double) tempAttended / tempTotal * 100;
+    }
+
+    /**
+     * Calculate predicted attendance for ATTEND
+     * Formula: (attended + attendCount) / (total + attendCount) * 100
+     * Uses TEMP variables - does NOT modify original data
+     */
+    private double calculateAttendPrediction(int attendCount) {
+        int originalAttended = currentSubject.getAttended();
+        int originalTotal = currentSubject.getTotal();
+
+        if (originalTotal < 0 || attendCount < 0) {
+            return 0.0;
+        }
+
+        // Use temporary values for prediction
+        tempAttended = originalAttended + attendCount;
+        tempTotal = originalTotal + attendCount;
+
+        return (double) tempAttended / tempTotal * 100;
+    }
+
+    /**
+     * Handle Skip Multiple button click
+     * ONLY calculates prediction - does NOT modify original data
+     */
     private void handleSkipMultiple() {
         String skipCountStr = etSkipCount.getText().toString().trim();
 
+        // Clear previous prediction result
+        tvPrediction.setText("");
+
+        // Validate empty input
         if (skipCountStr.isEmpty()) {
-            Toast.makeText(this, R.string.enter_skip_count, Toast.LENGTH_SHORT).show();
+            etSkipCount.setError(getString(R.string.error_enter_count));
+            etSkipCount.requestFocus();
+            Toast.makeText(this, R.string.error_enter_count, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -204,96 +262,47 @@ public class PredictionActivity extends AppCompatActivity {
         try {
             skipCount = Integer.parseInt(skipCountStr);
         } catch (NumberFormatException e) {
-            Toast.makeText(this, R.string.invalid_number, Toast.LENGTH_SHORT).show();
+            etSkipCount.setError(getString(R.string.error_invalid_count));
+            etSkipCount.requestFocus();
             return;
         }
 
         if (skipCount <= 0) {
-            Toast.makeText(this, R.string.invalid_skip_count, Toast.LENGTH_SHORT).show();
+            etSkipCount.setError(getString(R.string.error_invalid_count));
+            etSkipCount.requestFocus();
             return;
         }
 
-        double newPercentage = AttendanceUtils.skipMultiple(
-                currentSubject.getAttended(),
-                currentSubject.getTotal(),
-                skipCount
-        );
+        // Calculate predicted attendance using temporary values
+        double predictedPercentage = calculateSkipPrediction(skipCount);
+        String status = AttendanceUtils.getStatus(predictedPercentage);
+        int statusColor = AttendanceUtils.getStatusColor(predictedPercentage);
 
-        tvPrediction.setText(getString(R.string.skip_multiple_prediction,
-                skipCount, AttendanceUtils.formatPercentage(newPercentage)));
+        // Display prediction result (does NOT modify original UI)
+        String resultText = getString(R.string.skip_prediction_result,
+                skipCount,
+                AttendanceUtils.formatPercentage(predictedPercentage),
+                status);
 
-        // Show warning dialog
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.confirm_skip_multiple)
-                .setMessage(getString(R.string.confirm_skip_multiple_message, skipCount))
-                .setPositiveButton(R.string.confirm, (dialog, which) -> {
-                    currentSubject.setTotal(currentSubject.getTotal() + skipCount);
-                    saveAndRefresh();
-                    etSkipCount.setText("");
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
-
-    private void handleTimer() {
-        if (isTimerRunning) {
-            // Stop timer
-            countDownTimer.cancel();
-            isTimerRunning = false;
-            btnStartTimer.setText(R.string.start_timer);
-            tvTimer.setText(etTimerMinutes.getText().toString().trim() + ":00");
-        } else {
-            // Get user entered minutes
-            String minutesStr = etTimerMinutes.getText().toString().trim();
-            int minutes;
-
-            try {
-                minutes = Integer.parseInt(minutesStr);
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, R.string.invalid_timer_value, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (minutes <= 0 || minutes > 180) {
-                Toast.makeText(this, R.string.invalid_timer_value, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Start countdown timer with user-defined duration
-            countDownTimer = new CountDownTimer(minutes * 60 * 1000, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    long mins = millisUntilFinished / 60000;
-                    long secs = (millisUntilFinished % 60000) / 1000;
-                    tvTimer.setText(String.format("%02d:%02d", mins, secs));
-                }
-
-                @Override
-                public void onFinish() {
-                    tvTimer.setText(R.string.timer_finished);
-                    Toast.makeText(PredictionActivity.this, R.string.study_session_done,
-                            Toast.LENGTH_SHORT).show();
-                    isTimerRunning = false;
-                    btnStartTimer.setText(R.string.start_timer);
-                }
-            };
-            countDownTimer.start();
-            isTimerRunning = true;
-            btnStartTimer.setText(R.string.stop_timer);
-        }
+        tvPrediction.setText(resultText);
+        tvPrediction.setTextColor(statusColor);
     }
 
     /**
-     * Handle "Attend Classes Predictor" calculation
-     * Calculate new attendance after attending multiple classes
+     * Handle Attend Multiple button click
+     * ONLY calculates prediction - does NOT modify original data
      */
-    private void handleCalculateAttend() {
+    private void handleAttendMultiple() {
         String attendCountStr = etAttendCount.getText().toString().trim();
 
-        // Validate input
+        // Clear previous prediction result
+        tvPrediction.setText("");
+
+        // Validate empty input
         if (attendCountStr.isEmpty()) {
-            etAttendCount.setError(getString(R.string.error_enter_attend_count));
+            etAttendCount.setError(getString(R.string.error_enter_count));
             etAttendCount.requestFocus();
+            Toast.makeText(this, R.string.error_enter_count, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -301,91 +310,38 @@ public class PredictionActivity extends AppCompatActivity {
         try {
             attendCount = Integer.parseInt(attendCountStr);
         } catch (NumberFormatException e) {
-            etAttendCount.setError(getString(R.string.invalid_number));
+            etAttendCount.setError(getString(R.string.error_invalid_count));
             etAttendCount.requestFocus();
             return;
         }
 
         if (attendCount <= 0) {
-            etAttendCount.setError(getString(R.string.invalid_skip_count));
+            etAttendCount.setError(getString(R.string.error_invalid_count));
             etAttendCount.requestFocus();
             return;
         }
 
-        // Calculate new attendance
-        double currentPercentage = AttendanceUtils.calculateAttendance(
-                currentSubject.getAttended(),
-                currentSubject.getTotal()
-        );
+        // Calculate predicted attendance using temporary values
+        double predictedPercentage = calculateAttendPrediction(attendCount);
+        String status = AttendanceUtils.getStatus(predictedPercentage);
+        int statusColor = AttendanceUtils.getStatusColor(predictedPercentage);
 
-        double newPercentage = AttendanceUtils.attendMultiple(
-                currentSubject.getAttended(),
-                currentSubject.getTotal(),
-                attendCount
-        );
-
-        // Display result
+        // Display prediction result (does NOT modify original UI)
         String resultText = getString(R.string.attend_prediction_result,
                 attendCount,
-                AttendanceUtils.formatPercentage(newPercentage));
+                AttendanceUtils.formatPercentage(predictedPercentage),
+                status);
 
-        if (newPercentage >= AttendanceUtils.LOW_THRESHOLD) {
-            tvAttendPrediction.setText(resultText + " ✓");
-            tvAttendPrediction.setTextColor(getResources().getColor(R.color.safe_green, null));
-        } else {
-            tvAttendPrediction.setText(resultText);
-            tvAttendPrediction.setTextColor(getResources().getColor(R.color.text_primary, null));
-        }
-
-        // Show minimum classes needed if not yet safe
-        if (currentPercentage < AttendanceUtils.LOW_THRESHOLD) {
-            int minNeeded = AttendanceUtils.minClassesNeeded(
-                    currentSubject.getAttended(),
-                    currentSubject.getTotal(),
-                    AttendanceUtils.LOW_THRESHOLD
-            );
-
-            if (minNeeded > 0) {
-                tvMinClassesNeeded.setText(getString(R.string.min_classes_needed, minNeeded));
-                tvMinClassesNeeded.setVisibility(TextView.VISIBLE);
-            } else if (minNeeded == 0) {
-                tvMinClassesNeeded.setText(R.string.already_safe);
-                tvMinClassesNeeded.setVisibility(TextView.VISIBLE);
-            } else {
-                tvMinClassesNeeded.setVisibility(TextView.GONE);
-            }
-        } else {
-            tvMinClassesNeeded.setText(R.string.already_safe);
-            tvMinClassesNeeded.setVisibility(TextView.VISIBLE);
-        }
+        tvPrediction.setText(resultText);
+        tvPrediction.setTextColor(statusColor);
     }
 
     private void handleEditSubject() {
-        // This will be handled by opening AddSubjectActivity with edit mode
         new AlertDialog.Builder(this)
                 .setTitle(R.string.edit_subject)
                 .setMessage(R.string.edit_subject_message)
-                .setPositiveButton(R.string.yes, (dialog, which) -> {
-                    finish();
-                })
+                .setPositiveButton(R.string.yes, (dialog, which) -> finish())
                 .setNegativeButton(R.string.no, null)
                 .show();
-    }
-
-    private void saveAndRefresh() {
-        boolean success = dbHelper.updateSubject(currentSubject);
-        if (success) {
-            updateUI();
-        } else {
-            Toast.makeText(this, R.string.update_failed, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
     }
 }

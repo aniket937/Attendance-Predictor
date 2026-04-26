@@ -39,18 +39,18 @@
     <string name="prediction">Prediction</string>
     <string name="max_bunks_title">Maximum Safe Bunks</string>
     <string name="max_bunks">You can bunk %d more classes</string>
+    <string name="max_bunks_zero">You cannot bunk any more classes</string>
+    <string name="need_attend">You need to attend %d more classes to reach 75%%</string>
     <string name="prediction_result">Prediction Result</string>
-    <string name="attend_next">Attend Next</string>
-    <string name="skip_next">Skip Next</string>
-    <string name="skip_multiple">Skip Multiple</string>
+    <string name="skip_multiple">SKIP MULTIPLE</string>
     <string name="skip_count">Classes to skip</string>
-    <string name="attend_predictor">Attend Classes Predictor</string>
+    <string name="attend_multiple">ATTEND MULTIPLE</string>
     <string name="attend_count">Classes to attend</string>
-    <string name="calculate">Calculate</string>
-    <string name="attend_prediction_result">After attending %1$d more class(es): %2$s</string>
-    <string name="min_classes_needed">Attend %1$d more to reach 75%%</string>
-    <string name="already_safe">You\'re already safe!</string>
-    <string name="error_enter_attend_count">Enter number of classes</string>
+    <string name="attend_prediction_result">If you attend %1$d classes → Attendance = %2$s (%3$s)</string>
+    <string name="skip_prediction_result">If you skip %1$d classes → Attendance = %2$s (%3$s)</string>
+    <string name="error_enter_count">Enter number of classes</string>
+    <string name="error_invalid_count">Enter valid count (1 or more)</string>
+    <string name="initial_prediction">Enter classes to skip or attend and click the buttons above to see predictions.</string>
     <string name="set_timer">Set Timer</string>
     <string name="minutes">Min</string>
     <string name="minutes_label">min</string>
@@ -66,7 +66,7 @@
 
     <!-- Dialogs -->
     <string name="confirm_attend">Confirm Attendance</string>
-    <string name="confirm_attend_message">Mark this class as attended?</string>
+    <string name="confirm_attend_message">Mark %d classes as attended?</string>
     <string name="warning">Warning</string>
     <string name="low_attendance_warning">Your attendance is already low! Are you sure you want to skip?</string>
     <string name="skip_anyway">Skip Anyway</string>
